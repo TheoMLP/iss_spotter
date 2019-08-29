@@ -31,5 +31,20 @@ const fetchCoordsByIP = (ip, callback) => {
   });
 };
 
+const fetchISSFlyOverTimes = (coordinates, callback) => {
+  request(`http://api.open-notify.org/iss-pass.json?lat=${coordinates.latitude}&lon=${coordinates.longitude}`, (error, response, body) => {
+    if (error) return callback(error, null);
 
-module.exports = { fetchMyIp, fetchCoordsByIP };
+    if (response.statusCode !== 200) {
+      const msg = `Status code ${response.statusCode} when fetching fly over times for ${coordinates}. Returned ${body}`;
+      callback(Error(msg), null);
+      return;
+    }
+
+    const flyOverTimes = JSON.parse(body).response;
+    callback(null, flyOverTimes);
+  });
+};
+
+
+module.exports = { fetchMyIp, fetchCoordsByIP, fetchISSFlyOverTimes };
